@@ -1,0 +1,13 @@
+# TRUCK VISION AI - backend IA
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+numpy>=1.26
+opencv-python>=4.9
+pillow>=10.0
+fpdf2>=2.7
+# Détection + suivi (YOLO + ByteTrack)
+ultralytics>=8.3
+lap>=0.5.12
+# OCR : modèles PP-OCR (PaddleOCR) exécutés via ONNX Runtime - léger, CPU
+rapidocr-onnxruntime>=1.4

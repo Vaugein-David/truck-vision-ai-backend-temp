@@ -1,0 +1,3 @@
+# Optionnel : moteur PaddleOCR natif (plus lourd). Activer avec OCR_ENGINE=paddleocr.
+paddlepaddle>=2.6
+paddleocr>=2.7

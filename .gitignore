@@ -1,0 +1,12 @@
+
+# données et modèles locaux
+storage/
+!storage/.gitkeep
+models/*.pt
+.venv/
+__pycache__/
+*.pyc
+
+# données locales
+storage/
+models/*.pt
