@@ -31,6 +31,8 @@ def read_plate(img: np.ndarray, vehicle_bbox, threshold: float) -> dict:
             continue
         readings = [(cand["text"], cand["score"])] if cand["text"] else []
         readings.append(plate_recognizer.read_crop(ip.enhance_plate(crop)))
+        # Lecture détection + reconnaissance sur le recadrage brut et agrandi (plaques petites ou floues).
+        readings += plate_recognizer.read_plate_variants(crop)
         scored = []
         for text, score in readings:
             norm = normalize(text)

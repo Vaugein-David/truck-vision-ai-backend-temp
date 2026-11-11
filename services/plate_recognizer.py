@@ -13,6 +13,7 @@ from __future__ import annotations
 import re
 import threading
 
+import cv2
 import numpy as np
 
 import config
@@ -114,6 +115,18 @@ class PlateRecognizer:
         return out
 
     # -- lecture d'un recadrage de plaque (reconnaissance seule) --
+    def read_plate_variants(self, crop: np.ndarray) -> list[tuple[str, float]]:
+        """Lectures complètes (détection + reconnaissance) du recadrage brut et agrandi x2."""
+        if not self.load() or crop is None or crop.size == 0:
+            return []
+        out: list[tuple[str, float]] = []
+        big = cv2.resize(crop, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        for variant in (crop, big):
+            for r in self.read_regions(variant):
+                if r["text"]:
+                    out.append((r["text"], r["score"]))
+        return out
+
     def read_crop(self, crop: np.ndarray) -> tuple[str, float]:
         if not self.load() or crop is None or crop.size == 0:
             return "", 0.0

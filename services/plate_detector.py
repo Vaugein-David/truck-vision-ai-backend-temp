@@ -151,20 +151,21 @@ class PlateDetector:
                 continue
             light = self._light_background(img, c["bbox"])
             cy = (c["bbox"][1] + c["bbox"][3]) / 2
-            rel_y = (cy - vb[1]) / (vb[3] - vb[1]) if vb else None
+            # Sans véhicule détecté, la position est mesurée sur toute l'image.
+            rel_y = (cy - vb[1]) / (vb[3] - vb[1]) if vb else cy / max(img.shape[0], 1)
             if fmt in ("SIV", "FNI"):
                 # Format officiel : indice fort. Un fond sombre reste possible (photo de nuit) mais pénalisé.
                 rank = c["score"] + (0.5 if fmt == "SIV" else 0.3) + (0.2 if light else -0.2)
             elif fmt == "AUTRE":
                 # Texte alphanumérique quelconque : n'est retenu que s'il ressemble physiquement à une plaque.
-                if not light or (rel_y is not None and rel_y < 0.3):
+                if rel_y is not None and rel_y < 0.3:
                     continue
-                rank = c["score"]
+                rank = c["score"] + (0.0 if light else -0.2)
             else:
                 # Lecture partielle d'une zone qui a l'aspect d'une plaque, sur le véhicule :
                 # la plaque est localisée mais sera déclarée illisible (aucun texte retourné).
-                partial = len(norm) >= 4 and any(ch.isdigit() for ch in norm) and len(norm) <= 9
-                if not (partial and light and rel_y is not None and 0.3 <= rel_y <= 1.0 and 2.0 <= ratio <= 7.0):
+                partial = len(norm) >= 4 and any(ch.isdigit() for ch in norm) and len(norm) <= 12
+                if not (partial and rel_y is not None and 0.3 <= rel_y <= 1.0 and 2.0 <= ratio <= 7.0):
                     continue
                 rank = c["score"] * 0.5
             out.append({**c, "format": fmt, "rank": rank, "plate_like": light})
